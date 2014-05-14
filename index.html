@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+
+		<style type="text/css">
+			#caption {
+				font-font: Helvetica, Arial;
+			}
+			button {
+				padding: 10px;
+			}
+			button[disabled] {
+				opacity: 0.5;
+			}
+		</style>
+    </head>
+    <body>
+
+
+        <!-- Add your site or application content here -->
+
+		<div style="float: left">
+			<div id="topology">
+			</div>
+		</div>
+		<div style="padding: 50px">
+			<button id="plan">Start Planning</button>
+			<button id="deploy" disabled="disabled">Start Deployment</button>
+			<div id="loader"></div>
+		</div>
+		<h1 id="caption" class="clearfix"></h1>
+
+
+
+
+
+
+
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
+
+		<script type="text/javascript">
+			var numTopos = 5;
+
+			$(document).ready(function() {
+				// generate topology images
+				for (var i = 1; i <= numTopos; i++) {
+					$("#topology").append("<img src=\"img/" + i + ".png\" id=\"topo" + i + "\" class=\"hidden\" />");
+				}
+
+				$.fn.setCaption("Current base station to S-GW assignment")
+				$.fn.showTopo(1);
+				$("#loader").hide();
+
+				$("#topo1").click(function() { $.fn.setCaption("Mega Events are happening (yellow stars)"); $.fn.showTopo(2); });
+				$("#topo2").click(function() { $.fn.setCaption("Access nodes requiring additional resources (yellow diamons)"); $.fn.showTopo(3); });
+				$("#topo3").click(function() { $.fn.setCaption("Possible locations for S-GWs (turquoise)"); $.fn.showTopo(4); });
+
+
+
+				$("#plan").click(function() {
+					$.fn.setCaption("Optimal locations for S-GWs and assignment calculated (red circles)");
+					$("#plan").attr("disabled", "disabled");
+
+					$("#loader").show().delay(1000).queue(function (next) {
+						$(this).hide();
+						$("#deploy").removeAttr("disabled");
+						$.fn.showTopo(5);
+						next();
+					});
+
+				});
+				$("#deploy").click(function() {
+					$.fn.setCaption("Redirect to CAM");
+					$("#loader").show().delay(2000).queue(function (next) {
+						document.location.href = "http://example.com/cam";
+
+						next();
+					});
+				});
+
+			});
+
+			$.fn.showTopo = function showTopo(num) {
+				for (var i = 1; i <= numTopos; i++) {
+					if (i != num) {
+						$("#topo" + i).addClass("hidden");
+					}
+					$("#topo" + num).removeClass("hidden");
+				}
+				return this;
+			}
+
+			$.fn.setCaption = function setCaption(text) {
+				$("#caption").text(text);
+
+				return this
+			}
+
+			$.fn.animate = function animate() {
+
+
+
+
+			}
+
+			window["step1"] = function step1() {
+				$.fn.setCaption("Step 1");
+				$.fn.showTopo(3);
+			}
+
+			window["step2"] = function step2() {
+				$.fn.setCaption("Step 2");
+				$.fn.showTopo(2);
+			}
+			window["step3"] = function step3() {
+				$.fn.setCaption("Step 3");
+				$.fn.showTopo(3);
+			}
+		</script>
+
+		<script type="text/javascript" src="js/canvas.js"></script>
+		<script type="text/javascript">
+			var cSpeed=9;
+			var cWidth=64;
+			var cHeight=64;
+			var cTotalFrames=8;
+			var cFrameWidth=64;
+			var cImageSrc='img/sprites.gif';
+
+			var cImageTimeout=false;
+
+			function startAnimation(){
+
+				document.getElementById('loader').innerHTML='<canvas id="canvas" width="'+cWidth+'" height="'+cHeight+'"><p>Your browser does not support the canvas element.</p></canvas>';
+
+				//FPS = Math.round(100/(maxSpeed+2-speed));
+				FPS = Math.round(100/cSpeed);
+				SECONDS_BETWEEN_FRAMES = 1 / FPS;
+				g_GameObjectManager = null;
+				g_run=genImage;
+
+				g_run.width=cTotalFrames*cFrameWidth;
+				genImage.onload=function (){cImageTimeout=setTimeout(fun, 0)};
+				initCanvas();
+			}
+
+
+			function imageLoader(s, fun)//Pre-loads the sprites image
+			{
+				clearTimeout(cImageTimeout);
+				cImageTimeout=0;
+				genImage = new Image();
+				genImage.onload=function (){cImageTimeout=setTimeout(fun, 0)};
+				genImage.onerror=new Function('alert(\'Could not load the image\')');
+				genImage.src=s;
+			}
+
+			//The following code starts the animation
+			new imageLoader(cImageSrc, 'startAnimation()');
+		</script>
+
+	</body>
+</html>
